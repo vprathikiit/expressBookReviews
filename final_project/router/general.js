@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -21,50 +22,79 @@ public_users.post("/register", (req,res) => {
   return res.status(300).json({message: "Unable to register user"});
 });
 
-// Get the book list available in the shop
-public_users.get('/',function (req, res) {
+
+// Task 10: Get the book list available in the shop using async/await
+public_users.get('/', async function (req, res) {
   //Write your code here
-  return res.status(300).json(books);
+  try {
+    const data = await new Promise((resolve, reject) => {
+      resolve(books);
+    });
+    return res.status(300).json(data);
+  } catch (error) {
+    return res.status(300).json({message: "Error fetching books"});
+  }
 });
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+
+// Task 11: Get book details based on ISBN using async/await
+public_users.get('/isbn/:isbn', async function (req, res) {
   //Write your code here
-  const isbn = req.params.isbn;
-  return res.status(300).json(books[isbn]);
- });
+  try {
+    const isbn = req.params.isbn;
+    const data = await new Promise((resolve, reject) => {
+      resolve(books[isbn]);
+    });
+    return res.status(300).json(data);
+  } catch (error) {
+    return res.status(300).json({message: "Error fetching book"});
+  }
+});
+
   
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+// Task 12: Get book details based on author using async/await
+public_users.get('/author/:author', async function (req, res) {
   //Write your code here
-  const author = req.params.author;
-  let result = [];
-
-  for (let key in books) {
-    if (books[key].author === author) {
-      result.push(books[key]);
-    }
+  try {
+    const author = req.params.author;
+    const data = await new Promise((resolve, reject) => {
+      let result = [];
+      for (let key in books) {
+        if (books[key].author === author) {
+          result.push(books[key]);
+        }
+      }
+      resolve(result);
+    });
+    return res.status(300).json(data);
+  } catch (error) {
+    return res.status(300).json({message: "Error fetching books by author"});
   }
-
-  return res.status(300).json(result);
 });
 
-// Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+
+// Task 13: Get all books based on title using async/await
+public_users.get('/title/:title', async function (req, res) {
   //Write your code here
-  const title = req.params.title;
-  let result = [];
-
-  for (let key in books) {
-    if (books[key].title === title) {
-      result.push(books[key]);
-    }
+  try {
+    const title = req.params.title;
+    const data = await new Promise((resolve, reject) => {
+      let result = [];
+      for (let key in books) {
+        if (books[key].title === title) {
+          result.push(books[key]);
+        }
+      }
+      resolve(result);
+    });
+    return res.status(300).json(data);
+  } catch (error) {
+    return res.status(300).json({message: "Error fetching books by title"});
   }
-
-  return res.status(300).json(result);
 });
 
-//  Get book review
+
+// Get book review (unchanged)
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
@@ -72,3 +102,5 @@ public_users.get('/review/:isbn',function (req, res) {
 });
 
 module.exports.general = public_users;
+
+
